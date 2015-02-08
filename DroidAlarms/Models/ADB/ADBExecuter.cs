@@ -6,20 +6,9 @@ namespace DroidAlarms.Models.ADB
 {
 	public class ADBExecuter
 	{
-		private static ADBExecuter instance;
-		public static ADBExecuter Instance {
-			get {
-				if (instance == null) {
-					instance = new ADBExecuter ();
-				}
-
-				return instance;
-			}
-		}
-
 		public static string ExecutablePath { get; set; }
 
-		private ADBExecuter ()
+		public ADBExecuter ()
 		{
 		}
 
