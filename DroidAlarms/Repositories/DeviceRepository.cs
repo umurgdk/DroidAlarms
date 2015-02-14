@@ -28,6 +28,17 @@ namespace DroidAlarms.Repositories
 		{
 			ADB adb = new ADB ();
 			Reset(adb.GetDevices ());
+			RefreshAlarms ();
+		}
+
+		public void RefreshAlarms ()
+		{
+			ADB adb = new ADB ();
+
+			foreach (var device in Devices) {
+				List<Application> applications = adb.GetApplicationsWithAlarms (device);
+				device.ResetApplications(applications);
+			}
 		}
 
 		private DeviceRepository ()
