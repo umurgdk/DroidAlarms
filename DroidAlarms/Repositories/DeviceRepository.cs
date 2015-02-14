@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using DroidAlarms.Models;
+using DroidAlarms.Models.ADB;
 
 namespace DroidAlarms.Repositories
 {
@@ -9,7 +11,6 @@ namespace DroidAlarms.Repositories
 		public List<Device> Devices { get; private set; }
 		public event EventHandler<DeviceRepositoryEventArgs> Added;
 		public event EventHandler<DeviceRepositoryEventArgs> Removed;
-		public event EventHandler<EventArgs> Resetted;
 
 		private static DeviceRepository _instance;
 
@@ -21,6 +22,12 @@ namespace DroidAlarms.Repositories
 
 				return _instance;
 			}
+		}
+
+		public void Refresh ()
+		{
+			ADB adb = new ADB ();
+			Reset(adb.GetDevices ());
 		}
 
 		private DeviceRepository ()
@@ -46,14 +53,20 @@ namespace DroidAlarms.Repositories
 			}
 		}
 
-		public void Reset(IEnumerable<Device> devices)
+		public void Reset(IEnumerable<Device> newDevices)
 		{
-			Devices.Clear ();
-			Devices.AddRange (devices);
+			IEnumerable<Device> willRemoved = Devices.Except (newDevices);
+			IEnumerable<Device> willAdded = newDevices.Except (Devices);
 
-			if (Resetted != null) {
-				Resetted (this, EventArgs.Empty);
+			foreach (var device in willRemoved) {
+				Remove (device);
 			}
+
+			foreach (var device in willAdded) {
+				Add (device);
+			}
+
+			Console.WriteLine (Devices);
 		}
 	}
 }

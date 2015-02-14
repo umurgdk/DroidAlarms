@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -7,6 +8,7 @@ namespace DroidAlarms.Models.ADB
 	public class ADBExecuter
 	{
 		public static string ExecutablePath { get; set; }
+		public static bool DebugMode = false;
 
 		public ADBExecuter ()
 		{
@@ -17,8 +19,8 @@ namespace DroidAlarms.Models.ADB
 			Process process = new Process ();
 
 			try {
-				process.StartInfo.UseShellExecute = true;
-				process.StartInfo.FileName = "adb";
+				process.StartInfo.UseShellExecute = false;
+				process.StartInfo.FileName = ExecutablePath;
 				process.StartInfo.CreateNoWindow = true;
 				process.StartInfo.RedirectStandardOutput = true;
 				process.StartInfo.Arguments = string.Join(" ", parameters);
@@ -27,6 +29,11 @@ namespace DroidAlarms.Models.ADB
 				string output = process.StandardOutput.ReadToEnd();
 
 				process.WaitForExit();
+
+				if (DebugMode) {
+					System.Console.WriteLine("adb " + string.Join(" ", parameters));
+					System.Console.WriteLine(output);
+				}
 
 				return output;
 			} catch (Exception ex) {
@@ -41,12 +48,19 @@ namespace DroidAlarms.Models.ADB
 
 		public string DeviceProp (string deviceId, string propName)
 		{
-			return Run ("shell", "-s", deviceId, "getprop", propName);
+			return Run ("-s", deviceId, "shell", "getprop", propName).Trim ();
+		}
+
+		public List<string> DeviceProps (string deviceId, params string[] propNames)
+		{
+			return propNames.Select (prop => {
+				return DeviceProp (deviceId, prop);
+			}).ToList();
 		}
 
 		public string Alarms (string deviceId)
 		{
-			return Run ("shell", "-s", deviceId, "dumpsys", "alarm");
+			return Run ("-s", deviceId, "shell", "dumpsys", "alarm");
 		}
 	}
 }

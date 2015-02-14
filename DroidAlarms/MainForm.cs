@@ -3,6 +3,9 @@ using Eto.Forms;
 using Eto.Drawing;
 using DroidAlarms.Interface;
 
+using DroidAlarms.Repositories;
+using DroidAlarms.Models.ADB;
+
 namespace DroidAlarms
 {
 	/// <summary>
@@ -12,18 +15,25 @@ namespace DroidAlarms
 	{
 		public MainForm ()
 		{
+			ADBExecuter.DebugMode = true;
+			ADBExecuter.ExecutablePath = "/Users/umurgedik/Applications/adt/sdk/platform-tools/adb";
+
 			Title = "My Eto Form";
 			ClientSize = new Size (800, 600);
 
 			// scrollable region as the main content
-			Content = new DevicesPanel ();
+			Content = new Splitter() {
+				Panel1 = new DevicesPanel (),
+				Panel2 = new AlarmsPanel (),
+				Position = 160
+			};
 
 			// create a few commands that can be used for the menu and toolbar
 			var clickMe = new Command {
 				MenuText = "Refresh!",
 				ToolBarText = "Refresh!"
 			};
-			clickMe.Executed += (sender, e) => MessageBox.Show (this, "I was clicked!");
+			clickMe.Executed += (sender, e) => DeviceRepository.Instance.Refresh ();
 
 			var quitCommand = new Command {
 				MenuText = "Quit",
@@ -52,6 +62,8 @@ namespace DroidAlarms
 
 			// create toolbar			
 			ToolBar = new ToolBar { Items = { clickMe } };
+
+			DeviceRepository.Instance.Refresh ();
 		}
 	}
 }

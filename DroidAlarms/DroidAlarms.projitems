@@ -19,6 +19,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Alarm.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ADB\ADB.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ADB\ADBExecuter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ADB\ADBParser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ADB\ADBAlarmParseResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Models\" />
