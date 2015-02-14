@@ -6,7 +6,7 @@ namespace DroidAlarms.Models
 {
 	public class Device : ITreeItem
 	{
-		public long   			 Id   { get; set; } 
+		public string  			 Id   { get; set; } 
 		public string 			 Name { get; set; }
 		public List<Application> Applications { get; private set; } = new List<Application>();
 
