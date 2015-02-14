@@ -6,7 +6,8 @@ namespace DroidAlarms.Models
 {
 	public class Device : ITreeItem
 	{
-		public string Name { get; set; }
+		public long   			 Id   { get; set; } 
+		public string 			 Name { get; set; }
 		public List<Application> Applications { get; private set; } = new List<Application>();
 
 		public override bool Equals (object obj)
