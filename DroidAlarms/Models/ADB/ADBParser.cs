@@ -8,7 +8,8 @@ namespace DroidAlarms.Models.ADB
 	public class ADBParser
 	{
 		public Regex DevicesRegex = new Regex(@"^([^\s]+)\s+device$", RegexOptions.Multiline);
-		public Regex AlarmRegex = new Regex(@"(ELAPSED|ELAPSED_WAKEUP|RTC_WAKEUP|RTC)\s.*?Alarm\{([^\s]+)\stype\s\d+\s(.*?)\}\n\s+.*?when=([+-].*?ms).*?repeatInterval=(\d+)");
+		public Regex WhenRegex    = new Regex(@"(\d+)(ms|m|s|h|d)");
+		public Regex AlarmRegex   = new Regex(@"(ELAPSED|ELAPSED_WAKEUP|RTC_WAKEUP|RTC)\s.*?Alarm\{([^\s]+)\stype\s\d+\s(.*?)\}\s+.*?when=([+-].*?ms).*?repeatInterval=(\d+)");
 
 		public ADBParser ()
 		{
@@ -24,6 +25,53 @@ namespace DroidAlarms.Models.ADB
 			}
 
 			return deviceNames;
+		}
+
+		public DateTime CalculateDateFromWhen (string when)
+		{
+			var modifier = when [0];
+			var dateString = when.Substring (1);
+
+			MatchCollection matches = WhenRegex.Matches (dateString);
+
+			var now = DateTime.Now;
+
+			foreach (Match match in matches) {
+				var number = int.Parse(match.Groups [1].Value);
+				var timeType = match.Groups [2].Value;
+
+				if (modifier == '-') {
+					number = number * -1;
+				}
+
+				switch (timeType) {
+				case "d":
+					now = now.AddDays (number);
+					break;
+				case "h":
+					now = now.AddHours (number);
+					break;
+				case "m":
+					now = now.AddMinutes (number);
+					break;
+				case "s":
+					now = now.AddSeconds (number);
+					break;
+				case "ms":
+					now = now.AddMilliseconds (number);
+					break;
+				default:
+					break;
+				}
+			}
+
+			return now;
+		}
+
+		public DateTime CalculateDateFromInterval (string when, string interval)
+		{
+			var whenDate = CalculateDateFromWhen (when);
+			return whenDate.AddMilliseconds (double.Parse (interval));
 		}
 
 		public List<ADBAlarmParseResult> ParseAlarms (string output) {
