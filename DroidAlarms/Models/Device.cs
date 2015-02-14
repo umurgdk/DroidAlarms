@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Eto.Forms;
+using System.Linq;
 
 namespace DroidAlarms.Models
 {
@@ -8,8 +9,36 @@ namespace DroidAlarms.Models
 	{
 		public string  			 Id   { get; set; } 
 		public string 			 Name { get; set; }
-		public List<Application> Applications { get; private set; } = new List<Application>();
+		public List<Application> Applications { get; set; } = new List<Application>();
 
+		public event EventHandler<EventArgs> ApplicationsChanged;
+
+		public void ResetApplications (IEnumerable<Application> newApplications)
+		{
+			List<Application> willRemoved = Applications.Except (newApplications).ToList();
+			List<Application> willAdded = newApplications.Except (Applications).ToList();
+			List<Application> willUpdated = newApplications.Intersect (Applications).ToList();
+
+			foreach (var app in willRemoved) {
+				Applications.Remove (app);
+			}
+
+			Applications.AddRange (willAdded);
+
+			foreach (var app in willUpdated) {
+				var found = Applications.Where (a => a.Name == app.Name).FirstOrDefault ();
+
+				if (found != null) {
+					found.UpdateAlarms (app.Alarms);
+				}
+			}
+
+			if (ApplicationsChanged != null) {
+				ApplicationsChanged (this, EventArgs.Empty);
+			}
+		}
+
+		#region IEquatable implementation
 		public override bool Equals (object obj)
 		{
 			if (obj == null)
@@ -29,13 +58,15 @@ namespace DroidAlarms.Models
 				return (Name != null ? Name.GetHashCode () : 0);
 			}
 		}
-		
+		#endregion
+
 		#region ITreeItem implementation
 		public bool Expanded { get; set;}
 		public bool Expandable { get; } = true;
 
 		public ITreeItem Parent { get; set; }
 		#endregion
+
 		#region IDataStore implementation
 		public int Count {
 			get {
@@ -48,9 +79,11 @@ namespace DroidAlarms.Models
 			}
 		}
 		#endregion
+
 		#region IImageListItem implementation
 		public Eto.Drawing.Image Image { get; } = null;
 		#endregion
+
 		#region IListItem implementation
 		public string Text {
 			get {
