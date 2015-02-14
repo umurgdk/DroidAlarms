@@ -13,11 +13,17 @@ namespace DroidAlarms.Models
 			INTERVAL_WAKEUP
 		}
 
-		public long Id { get; private set; }
+		public string Id { get; private set; }
 		public DateTime Time { get; private set; }
 		public AlarmType Type { get; private set; }
 
-		public Alarm (long id, DateTime time, AlarmType type)
+		public string TimeText {
+			get {
+				return Time.ToString ("G");
+			}
+		}
+
+		public Alarm (string id, DateTime time, AlarmType type)
 		{
 			Id = id;
 			Time = time;
