@@ -13,9 +13,12 @@ namespace DroidAlarms
 	/// </summary>
 	public class MainForm : Form
 	{
+		DevicesPanel devicesPanel = new DevicesPanel();
+		AlarmsPanel alarmsPanel = new AlarmsPanel();
+
 		public MainForm ()
 		{
-			ADBExecuter.DebugMode = true;
+//			ADBExecuter.DebugMode = true;
 			ADBExecuter.ExecutablePath = "/Users/umurgedik/Applications/adt/sdk/platform-tools/adb";
 
 			Title = "My Eto Form";
@@ -23,9 +26,14 @@ namespace DroidAlarms
 
 			// scrollable region as the main content
 			Content = new Splitter() {
-				Panel1 = new DevicesPanel (),
-				Panel2 = new AlarmsPanel (),
+				Panel1 = devicesPanel,
+				Panel2 = alarmsPanel,
 				Position = 160
+			};
+
+			devicesPanel.ApplicationActivated += (sender, e) => {
+				Console.WriteLine (e.Alarms.Count);
+				alarmsPanel.SetAlarms (e.Alarms);
 			};
 
 			// create a few commands that can be used for the menu and toolbar
