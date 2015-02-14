@@ -76,8 +76,6 @@ namespace DroidAlarms.Repositories
 			foreach (var device in willAdded) {
 				Add (device);
 			}
-
-			Console.WriteLine (Devices);
 		}
 	}
 }
