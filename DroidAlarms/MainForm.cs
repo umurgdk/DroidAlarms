@@ -32,14 +32,14 @@ namespace DroidAlarms
 			};
 
 			devicesPanel.ApplicationActivated += (sender, e) => {
-				Console.WriteLine (e.Alarms.Count);
 				alarmsPanel.SetAlarms (e.Alarms);
 			};
 
 			// create a few commands that can be used for the menu and toolbar
 			var clickMe = new Command {
 				MenuText = "Refresh!",
-				ToolBarText = "Refresh!"
+				ToolBarText = "Refresh!",
+				Image = Icon.FromResource(@"refreshIcon")
 			};
 			clickMe.Executed += (sender, e) => DeviceRepository.Instance.Refresh ();
 

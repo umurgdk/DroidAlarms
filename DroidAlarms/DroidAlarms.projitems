@@ -27,5 +27,11 @@
     <Folder Include="$(MSBuildThisFileDirectory)Interface\" />
     <Folder Include="$(MSBuildThisFileDirectory)Repositories\" />
     <Folder Include="$(MSBuildThisFileDirectory)Models\ADB\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Assets\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\refresh.png">
+      <LogicalName>refreshIcon</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
