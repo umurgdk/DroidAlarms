@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Eto.Forms;
 
@@ -6,14 +7,20 @@ namespace DroidAlarms.Models
 {
 	public class Application : ITreeItem, IEquatable<Application>
 	{
-		public string Name { get; private set; }
+		public string Name { get; set; }
 		public Device Device { get; set; }
-		public List<Alarm> Alarms { get; private set; }
+		public List<Alarm> Alarms { get; set; } = new List<Alarm>();
 
-		public Application (string name)
+		public event EventHandler<EventArgs> AlarmsChanged;
+
+		public void UpdateAlarms (IEnumerable<Alarm> newAlarms)
 		{
-			Name = name;
-			Alarms = new List<Alarm> ();
+			Alarms.Clear ();
+			Alarms.AddRange (newAlarms);
+
+			if (AlarmsChanged != null) {
+				AlarmsChanged (this, EventArgs.Empty);
+			}
 		}
 
 		#region IEquatable<Application> implementation
