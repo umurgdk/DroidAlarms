@@ -17,6 +17,10 @@ namespace DroidAlarms.Mac
 				handler.Scroll.BorderType = NSBorderType.NoBorder;
 			});
 
+			Style.Add<GridViewHandler> ("alarmsgrid", handler => {
+				handler.ScrollView.BorderType = NSBorderType.NoBorder;
+			});
+
 			new Application (Eto.Platforms.Mac).Run (new MainForm ());
 		}
 	}

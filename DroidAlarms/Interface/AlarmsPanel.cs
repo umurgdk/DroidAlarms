@@ -17,7 +17,8 @@ namespace DroidAlarms.Interface
 			Alarms = new ObservableCollection<Alarm> ();
 
 			GridView = new GridView {
-				DataStore = Alarms
+				DataStore = Alarms,
+				Style = "alarmsgrid"
 			};
 
 			GridView.Columns.Add (new GridColumn {
