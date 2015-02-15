@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ADB\ADBParser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ADB\ADBAlarmParseResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interface\Dialogs\SettingsDialog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Models\" />

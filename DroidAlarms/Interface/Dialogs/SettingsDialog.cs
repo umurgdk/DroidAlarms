@@ -17,12 +17,18 @@ namespace DroidAlarms.Interface.Dialogs
 		bool quitOnCancel = true;
 
 		public string Path { get; set; }
+		Settings settings;
 
 		public SettingsDialog (bool quitOnCancel)
 		{
+			settings = new Settings ();
 			this.quitOnCancel = quitOnCancel;
 
-			if (quitOnCancel) {
+			if (settings.ADBPath != null) {
+				textbox.Text = settings.ADBPath;
+			}
+
+			if (quitOnCancel && settings.ADBPath == null) {
 				btnCancel.Text = "Quit";
 			}
 
@@ -59,7 +65,7 @@ namespace DroidAlarms.Interface.Dialogs
 
 		public void OnCancel (object sender, EventArgs e)
 		{
-			if (this.quitOnCancel) {
+			if (this.quitOnCancel && settings.ADBPath == null) {
 				Close ();
 				Application.Instance.Quit ();
 			} else {

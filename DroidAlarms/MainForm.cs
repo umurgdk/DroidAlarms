@@ -35,12 +35,12 @@ namespace DroidAlarms
 			};
 
 			// create a few commands that can be used for the menu and toolbar
-			var clickMe = new Command {
+			var refresh = new Command {
 				MenuText = "Refresh!",
 				ToolBarText = "Refresh!",
 				Image = Icon.FromResource(@"refreshIcon")
 			};
-			clickMe.Executed += (sender, e) => DeviceRepository.Instance.Refresh ();
+			refresh.Executed += (sender, e) => DeviceRepository.Instance.Refresh ();
 
 			var quitCommand = new Command {
 				MenuText = "Quit",
@@ -51,37 +51,52 @@ namespace DroidAlarms
 			var aboutCommand = new Command { MenuText = "About..." };
 			aboutCommand.Executed += (sender, e) => MessageBox.Show (this, "About my app...");
 
+			var preferencesCommand = new Command { MenuText = "&Preferences..." };
+			preferencesCommand.Executed += (sender, e) => ShowSettings(true);
+
 			// create menu
 			Menu = new MenuBar {
 				Items = {
 					// File submenu
-					new ButtonMenuItem { Text = "&File", Items = { clickMe } },
+					new ButtonMenuItem { Text = "&File", Items = { refresh } },
 					// new ButtonMenuItem { Text = "&Edit", Items = { /* commands/items */ } },
 					// new ButtonMenuItem { Text = "&View", Items = { /* commands/items */ } },
 				},
 				ApplicationItems = {
 					// application (OS X) or file menu (others)
-					new ButtonMenuItem { Text = "&Preferences..." },
+					preferencesCommand,
 				},
 				QuitItem = quitCommand,
 				AboutItem = aboutCommand
 			};
 
 			// create toolbar			
-			ToolBar = new ToolBar { Items = { clickMe } };
+			ToolBar = new ToolBar { Items = { refresh } };
 
 			ShowSettings ();
 		}
 
-		public async void ShowSettings ()
+		public async void ShowSettings (bool force = false)
 		{
-			await Task.Delay (500);
-			var settings = new SettingsDialog (true);
-			settings.DisplayMode = DialogDisplayMode.Attached;
-			settings.ShowModal (this);
+			await Task.Delay (100);
 
-			if (settings.Path != null) {
-				ADBExecuter.ExecutablePath = settings.Path;
+			Settings settings = new Settings ();
+
+			if (settings.ADBPath != null && !force) {
+				ADBExecuter.ExecutablePath = settings.ADBPath;
+				DeviceRepository.Instance.Refresh ();
+				return;
+			}
+
+			var settingsDialog = new SettingsDialog (true);
+			settingsDialog.DisplayMode = DialogDisplayMode.Attached;
+			settingsDialog.ShowModal (this);
+
+			if (settingsDialog.Path != null) {
+				settings.ADBPath = settingsDialog.Path;
+				settings.Save ();
+
+				ADBExecuter.ExecutablePath = settingsDialog.Path;
 				DeviceRepository.Instance.Refresh ();
 			}
 		}
