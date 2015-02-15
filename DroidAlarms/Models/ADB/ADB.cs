@@ -25,7 +25,7 @@ namespace DroidAlarms.Models.ADB
 			var parser = new ADBParser ();
 
 			List<Application> applications = new List<Application> ();
-			var results = parser.ParseAlarms (output).GroupBy (result => result.Package);
+			var results = parser.ParseAlarms (output, device.MajorVersion).GroupBy (result => result.Package);
 
 			foreach (var resultGroup in results) {
 				var app = new Application () { Name = resultGroup.Key };
@@ -57,9 +57,12 @@ namespace DroidAlarms.Models.ADB
 			List<string> deviceIds = parser.ParseDevices (output);
 
 			return deviceIds.Select (deviceId => {
+				var propsValues = executer.DeviceProps(deviceId, PROP_MODEL, PROP_BUILD);
+
 				return new Device() {
+					MajorVersion = int.Parse(propsValues[1].Substring(0, 1)),
 					Id = deviceId,
-					Name = string.Join(" ", executer.DeviceProps(deviceId, PROP_MODEL, PROP_BUILD))
+					Name = string.Join(" ", propsValues)
 				};
 			}).ToList();
 		}

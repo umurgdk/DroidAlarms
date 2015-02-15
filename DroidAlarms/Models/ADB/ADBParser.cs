@@ -7,9 +7,10 @@ namespace DroidAlarms.Models.ADB
 {
 	public class ADBParser
 	{
-		public Regex DevicesRegex = new Regex(@"^([^\s]+)\s+device$", RegexOptions.Multiline);
-		public Regex WhenRegex    = new Regex(@"(\d+)(ms|m|s|h|d)");
-		public Regex AlarmRegex   = new Regex(@"(ELAPSED|ELAPSED_WAKEUP|RTC_WAKEUP|RTC)\s.*?Alarm\{([^\s]+)\stype\s\d+\s(.*?)\}\s+.*?when=([+-].*?ms).*?repeatInterval=(\d+)");
+		public Regex DevicesRegex 		= new Regex(@"^([^\s]+)\s+device$", RegexOptions.Multiline);
+		public Regex WhenRegex    		= new Regex(@"(\d+)(ms|m|s|h|d)");
+		public Regex AlarmRegex   		= new Regex(@"(ELAPSED|ELAPSED_WAKEUP|RTC_WAKEUP|RTC)\s.*?Alarm\{([^\s]+)\stype\s\d+\s(.*?)\}\s+.*?when=([+-].*?ms).*?repeatInterval=(\d+)");
+		public Regex AlarmRegexLollipop = new Regex(@"(ELAPSED|ELAPSED_WAKEUP|RTC_WAKEUP|RTC)\s.*?Alarm\{([^\s]+)\s\S+\s\S+\s\S+\s\S+\s(.*?)\}.*?when=([^\s]+).*?repeatInterval=(\d+)", RegexOptions.Singleline);
 
 		public ADBParser ()
 		{
@@ -74,8 +75,15 @@ namespace DroidAlarms.Models.ADB
 			return whenDate.AddMilliseconds (double.Parse (interval));
 		}
 
-		public List<ADBAlarmParseResult> ParseAlarms (string output) {
-			MatchCollection matches = AlarmRegex.Matches (output);
+		public List<ADBAlarmParseResult> ParseAlarms (string output, int version) {
+			MatchCollection matches;
+
+			if (version == 5) {
+				matches = AlarmRegexLollipop.Matches (output);
+			} else {
+				matches = AlarmRegex.Matches (output);
+			}
+
 			List<ADBAlarmParseResult> results = new List<ADBAlarmParseResult> ();
 
 			foreach (Match match in matches) {
