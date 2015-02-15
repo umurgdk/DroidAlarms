@@ -21,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ADB\ADBExecuter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ADB\ADBParser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ADB\ADBAlarmParseResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\Dialogs\SettingsDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Models\" />
@@ -28,6 +29,7 @@
     <Folder Include="$(MSBuildThisFileDirectory)Repositories\" />
     <Folder Include="$(MSBuildThisFileDirectory)Models\ADB\" />
     <Folder Include="$(MSBuildThisFileDirectory)Assets\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Interface\Dialogs\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\refresh.png">

@@ -1,10 +1,12 @@
 ﻿using System;
 using Eto.Forms;
 using Eto.Drawing;
-using DroidAlarms.Interface;
 
+using DroidAlarms.Interface;
+using DroidAlarms.Interface.Dialogs;
 using DroidAlarms.Repositories;
 using DroidAlarms.Models.ADB;
+using System.Threading.Tasks;
 
 namespace DroidAlarms
 {
@@ -18,9 +20,6 @@ namespace DroidAlarms
 
 		public MainForm ()
 		{
-//			ADBExecuter.DebugMode = true;
-			ADBExecuter.ExecutablePath = "/Users/umurgedik/Applications/adt/sdk/platform-tools/adb";
-
 			Title = "My Eto Form";
 			ClientSize = new Size (800, 600);
 
@@ -71,7 +70,20 @@ namespace DroidAlarms
 			// create toolbar			
 			ToolBar = new ToolBar { Items = { clickMe } };
 
-			DeviceRepository.Instance.Refresh ();
+			ShowSettings ();
+		}
+
+		public async void ShowSettings ()
+		{
+			await Task.Delay (500);
+			var settings = new SettingsDialog (true);
+			settings.DisplayMode = DialogDisplayMode.Attached;
+			settings.ShowModal (this);
+
+			if (settings.Path != null) {
+				ADBExecuter.ExecutablePath = settings.Path;
+				DeviceRepository.Instance.Refresh ();
+			}
 		}
 	}
 }
