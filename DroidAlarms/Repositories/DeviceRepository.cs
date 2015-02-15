@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using DroidAlarms.Models;
 using DroidAlarms.Models.ADB;
+using System.Threading.Tasks;
 
 namespace DroidAlarms.Repositories
 {
 	public class DeviceRepository
 	{
-		public List<Device> Devices { get; private set; }
+		public ObservableCollection<Device> Devices { get; private set; }
 		public event EventHandler<DeviceRepositoryEventArgs> Added;
 		public event EventHandler<DeviceRepositoryEventArgs> Removed;
 
@@ -43,38 +45,28 @@ namespace DroidAlarms.Repositories
 
 		private DeviceRepository ()
 		{
-			Devices = new List<Device> ();
+			Devices = new ObservableCollection<Device> ();
+			Devices.CollectionChanged += (object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) => {
+				if (e.NewItems != null && Added != null) {
+					Added (this, new DeviceRepositoryEventArgs(e.NewItems[0] as Device));
+				} else if (e.OldItems != null && Removed != null) {
+					Removed (this, new DeviceRepositoryEventArgs(e.OldItems[0] as Device));
+				}
+			};
 		}
 
-		public void Add(Device device)
-		{
-			Devices.Add (device);
-
-			if (Added != null) {
-				Added (this, new DeviceRepositoryEventArgs (device));
-			}
-		}
-
-		public void Remove(Device device)
-		{
-			Devices.Remove (device);
-
-			if (Removed != null) {
-				Removed (this, new DeviceRepositoryEventArgs (device));
-			}
-		}
 
 		public void Reset(IEnumerable<Device> newDevices)
 		{
 			IEnumerable<Device> willRemoved = Devices.Except (newDevices);
 			IEnumerable<Device> willAdded = newDevices.Except (Devices);
 
-			foreach (var device in willRemoved) {
-				Remove (device);
+			foreach (var device in willRemoved.ToList()) {
+				Devices.Remove (device);
 			}
 
 			foreach (var device in willAdded) {
-				Add (device);
+				Devices.Add (device);
 			}
 		}
 	}
