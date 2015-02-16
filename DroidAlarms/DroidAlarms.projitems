@@ -36,5 +36,8 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\refresh.png">
       <LogicalName>refreshIcon</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\appIcon.png">
+      <LogicalName>appIcon</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

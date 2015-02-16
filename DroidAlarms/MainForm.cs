@@ -20,8 +20,10 @@ namespace DroidAlarms
 
 		public MainForm ()
 		{
-			Title = "My Eto Form";
+			Title = "Droid Alarms";
 			ClientSize = new Size (800, 600);
+
+            Icon = Icon.FromResource (@"appIcon");
 
 			// scrollable region as the main content
 			Content = new Splitter() {
