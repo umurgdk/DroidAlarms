@@ -22,8 +22,13 @@ namespace DroidAlarms.Interface
 			};
 
 			GridView.Columns.Add (new GridColumn {
-				DataCell = new TextBoxCell { Binding = Binding.Property<Alarm, string>(a => a.Id)},
+				DataCell = new TextBoxCell { Binding = Binding.Property<Alarm, string>(a => a.Id) },
 				HeaderText = "ID"
+			});
+
+			GridView.Columns.Add (new GridColumn {
+				DataCell = new TextBoxCell { Binding = Binding.Property<Alarm, string>(a => a.TypeText) },
+				HeaderText = "Type"
 			});
 
 			GridView.Columns.Add (new GridColumn {

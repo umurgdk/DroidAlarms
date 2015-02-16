@@ -14,7 +14,9 @@ namespace DroidAlarms.Models
 		}
 
 		public string Id { get; private set; }
+
 		public DateTime Time { get; private set; }
+
 		public AlarmType Type { get; private set; }
 
 		public string TimeText {
@@ -22,6 +24,14 @@ namespace DroidAlarms.Models
 				return Time.ToString ("G");
 			}
 		}
+
+        public string TypeText {
+            get {
+                return Type.ToString ();
+            }
+        }
+
+
 
 		public Alarm (string id, DateTime time, AlarmType type)
 		{
@@ -43,7 +53,7 @@ namespace DroidAlarms.Models
 			Alarm other = (Alarm)obj;
 			return Id == other.Id;
 		}
-		
+
 
 		public override int GetHashCode ()
 		{
@@ -51,7 +61,7 @@ namespace DroidAlarms.Models
 				return Id.GetHashCode ();
 			}
 		}
-		
+
 
 		#endregion
 	}
