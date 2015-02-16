@@ -23,14 +23,7 @@ namespace DroidAlarms
 			Title = "Droid Alarms";
 			ClientSize = new Size (800, 600);
 
-            Icon = Icon.FromResource (@"appIcon");
-
-			// scrollable region as the main content
-			Content = new Splitter() {
-				Panel1 = devicesPanel,
-				Panel2 = alarmsPanel,
-				Position = 160
-			};
+            HideEmptyPanel ();		
 
 			devicesPanel.ApplicationActivated += (sender, e) => {
 				alarmsPanel.SetAlarms (e.Alarms);
@@ -42,7 +35,7 @@ namespace DroidAlarms
 				ToolBarText = "Refresh!",
 				Image = Icon.FromResource(@"refreshIcon")
 			};
-			refresh.Executed += (sender, e) => DeviceRepository.Instance.Refresh ();
+            refresh.Executed += (sender, e) => Refresh();
 
 			var quitCommand = new Command {
 				MenuText = "Quit",
@@ -78,6 +71,42 @@ namespace DroidAlarms
 			ShowSettings ();
 		}
 
+        public void ShowEmptyPanel ()
+        {
+            var layout = new DynamicLayout ();
+
+            layout.Add (new Label {
+                Text = "No Devices!", 
+                VerticalAlign = VerticalAlign.Middle,
+                HorizontalAlign = HorizontalAlign.Center,
+                Font = new Font(SystemFont.Default, 30)
+            }, true, true);
+
+            Content = layout;
+        }
+
+        public void HideEmptyPanel ()
+        {
+            Content = new Splitter() {
+                Panel1 = devicesPanel,
+                Panel2 = alarmsPanel,
+                Position = 160
+            };
+        }
+
+        public void Refresh ()
+        {
+            bool shouldHideEmptyPanel = DeviceRepository.Instance.Devices.Count == 0;
+
+            DeviceRepository.Instance.Refresh ();
+
+            if (DeviceRepository.Instance.Devices.Count == 0) {
+                ShowEmptyPanel ();
+            } else if (shouldHideEmptyPanel) {
+                HideEmptyPanel ();
+            }
+        }
+
 		public async void ShowSettings (bool force = false)
 		{
 			await Task.Delay (100);
@@ -86,21 +115,20 @@ namespace DroidAlarms
 
 			if (settings.ADBPath != null && !force) {
 				ADBExecuter.ExecutablePath = settings.ADBPath;
-				DeviceRepository.Instance.Refresh ();
-				return;
-			}
+            } else {
+                var settingsDialog = new SettingsDialog (true);
+                settingsDialog.DisplayMode = DialogDisplayMode.Attached;
+                settingsDialog.ShowModal (this);
 
-			var settingsDialog = new SettingsDialog (true);
-			settingsDialog.DisplayMode = DialogDisplayMode.Attached;
-			settingsDialog.ShowModal (this);
+                if (settingsDialog.Path != null) {
+                    settings.ADBPath = settingsDialog.Path;
+                    settings.Save ();
 
-			if (settingsDialog.Path != null) {
-				settings.ADBPath = settingsDialog.Path;
-				settings.Save ();
+                    ADBExecuter.ExecutablePath = settingsDialog.Path;
+                }
+            }
 
-				ADBExecuter.ExecutablePath = settingsDialog.Path;
-				DeviceRepository.Instance.Refresh ();
-			}
+            Refresh ();
 		}
 	}
 }
